@@ -5,6 +5,7 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="css/stle.css">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     </head>
     <body>
         <div id="cube-loader">
@@ -17,39 +18,124 @@
               </div>
             </div>
           </div>
-        <div class="button" >
-            <svg
-                 width="600"
-                 height="180"
-                 viewBox="0 0 600 180">
-              <g>
-                <path
-                      d="M 214.75 60.25 C 206.44 60.25 199.75 66.94 199.75 75.25 L 199.75 85.25 L 224.75 60.25 L 214.75 60.25 z " />
-                <path
-                      d="M 224.75 60.25 L 199.75 85.25 L 199.75 105.25 C 199.75 108.11697 200.56093 110.78156 201.94531 113.05469 L 254.75 60.25 L 224.75 60.25 z " />
-                <path
-                      d="M 254.75 60.25 L 201.94531 113.05469 C 204.5736 117.37029 209.30697 120.25 214.75 120.25 L 224.75 120.25 L 284.75 60.25 L 254.75 60.25 z " />
-                <path
-                      d="M 284.75 60.25 L 224.75 120.25 L 254.75 120.25 L 314.75 60.25 L 284.75 60.25 z " />
-                <path
-                      d="M 314.75 60.25 L 254.75 120.25 L 284.75 120.25 L 344.75 60.25 L 314.75 60.25 z " />
-                <path
-                      d="M 344.75 60.25 L 284.75 120.25 L 314.75 120.25 L 374.75 60.25 L 344.75 60.25 z " />
-                <path
-                      d="M 374.75 60.25 L 314.75 120.25 L 344.75 120.25 L 397.55469 67.445312 C 394.9264 63.129713 390.19303 60.25 384.75 60.25 L 374.75 60.25 z " />
-                <path
-                      d="M 397.55469 67.445312 L 344.75 120.25 L 374.75 120.25 L 399.75 95.25 L 399.75 75.25 C 399.75 72.38303 398.93907 69.718439 397.55469 67.445312 z " />
-                <path
-                      d="M 399.75 95.25 L 374.75 120.25 L 384.75 120.25 C 393.06 120.25 399.75 113.56 399.75 105.25 L 399.75 95.25 z " />
-              </g>
-            </svg>
-            <a href="index1.html">
-            <div class="submit">Запустить!
-               
-            </div>
-            <script src="js/index.js"></script>
-          </div>
-          </a>
-          
+          <a class="btnflip" href="index1.html">
+                  <span class="btnflip-item btnflip__front">Запустить</span>
+                  <span class="btnflip-item btnflip__center"></span>
+                  <span class="btnflip-item btnflip__back">НАЖИМАЙ!</span>
+      </a>
+      <script>
+      var width, height
+var step = 0;
+var canvas = document.createElement('canvas')
+var ctx = canvas.getContext('2d')
+var bg = linear-gradient(120deg, #c0e090, #F6D8E4)
+
+// mouse coordinates
+function Mouse () {
+  this.x = window.innerWidth / 2
+  this.y = window.innerHeight / 2
+}
+var mouse = new Mouse()
+document.onmousemove = function(e){ mouse.x = e.pageX; mouse.y = e.pageY}
+
+document.getElementsByTagName('body')[0].appendChild(canvas)
+
+window.addEventListener('resize', setup)
+
+
+
+
+setup()
+
+function setup() {
+  canvas.width = width = window.innerWidth
+  canvas.height = height = window.innerHeight
+  
+  fillCanvas(ctx, bg, 1)
+}
+
+window.requestAnimationFrame(animate);
+
+function animate() {
+  fillCanvas(ctx, bg, 1)
+  draw()
+  step++
+  window.requestAnimationFrame(function(){animate()})
+}
+
+
+function Flwr () {
+  this.follow = null
+  this.child = null
+  this.x = mouse.x
+  this.y = mouse.y
+  this.dx = 0
+  this.dy = 0
+  this.a = 0.35
+  this.b = 0.54
+  this.n = 0
+}
+
+
+var flwr, flwrPrev, train = [], i, n = 50;
+for (i = 0; i < n; i++) {
+  flwr = new Flwr()
+  flwr.n = i
+  if (flwrPrev) {
+    flwr.b = flwrPrev.b + (0.1/n)
+    flwr.follow = flwrPrev
+    flwrPrev.child = flwr
+  } else {
+    flwr.follow = mouse
+  }
+  flwrPrev = flwr
+  train.push(flwr)
+}
+
+function draw () {
+  // update flwrs
+  // console.log(train)
+  
+  for (i in train){
+    // update position
+    flwr = train[i]
+    var dx = flwr.follow.x - flwr.x
+    var dy = flwr.follow.y - flwr.y
+
+    flwr.dx = flwr.dx * flwr.a + dx * (1 - flwr.a)
+    flwr.dy = flwr.dy * flwr.a + dy * (1 - flwr.a)
+
+    flwr.x = flwr.dx * flwr.b + flwr.x 
+    flwr.y = flwr.dy * flwr.b + flwr.y 
+    
+    // draw
+    // ctx.beginPath();
+    // drawCircle(ctx, flwr.x, flwr.y, 2)
+    // ctx.fillStyle = '#FFF547'
+    // ctx.fill()
+    
+    if (flwr.follow !== mouse) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#FFF547'
+      ctx.lineCap = 'round'
+      ctx.lineWidth = (n-flwr.n)/n * 8 + 2
+      ctx.moveTo(flwr.x,flwr.y);
+      ctx.lineTo(flwr.follow.x,flwr.follow.y);
+      ctx.stroke();
+    }
+  }
+  
+}
+
+function drawCircle (context, x, y, r) {
+  context.arc(x ,y , r, 0, 2*Math.PI);
+}
+
+function fillCanvas (context, color, alpha) {
+  context.rect(0, 0, this.width, this.height)
+  context.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`
+  context.fill()
+}
+</script>
     </body>
 </html>
